@@ -1,9 +1,11 @@
+#!/usr/bin/env python3
+
 import argparse
 import hashlib
 import random
 import pyperclip
 
-parser = argparse.ArgumentParser(description='Strong password generator')
+parser = argparse.ArgumentParser(description='Simple password generator')
 
 parser.add_argument('--keystring', type=str, help='The passphrase on the basis of which the password will be generated')
 parser.add_argument('--keyfile', type=str, help='The path to the file on the basis of which the password will be generated. This is an alternative to the --keystring option')
