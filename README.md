@@ -14,7 +14,11 @@ For ubuntu:
 `export PATH="$HOME/.local/bin:$PATH"`
 
 ### Usage
+For generating password:
 `passeca.py [-h] [-k KEYSTRING] [-f KEYFILE] [-s SALT] [-l LOGIN]`
+
+For creating key file with key string:
+`passeca.py [-c] [-k KEYSTRING] [-f KEYFILE]`
 
 Options:
 -  `-h, --help`                           Show this help message and exit
@@ -23,3 +27,4 @@ Options:
 -  `-s SALT, --salt SALT`                 The required parameter is salt. For example, the site domain or program name
 -  `-l LOGIN, --login LOGIN`              User login, if needed
 -  `-o, --show`                           Show password without copied to clipboard
+-  `-c, --create`                         Create file with key string

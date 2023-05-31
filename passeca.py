@@ -1,57 +1,69 @@
 #!/usr/bin/env python3
 
-import argparse
-import hashlib
-import random
 import pyperclip
+import funcs
 
-parser = argparse.ArgumentParser(description="Simple password generator")
+xorKey = 42;
+xorMark = "xor42\n"
 
-parser.add_argument("-k", "--keystring", type=str, help="The passphrase on the basis of which the password will be generated")
-parser.add_argument("-f", "--keyfile", type=str, help="The path to the file on the basis of which the password will be generated. This is an alternative to the --keystring option")
-parser.add_argument("-s", "--salt", type=str, help="The required parameter is salt. For example, the site domain or program name")
-parser.add_argument("-l", "--login", type=str, help="User login, if needed")
-parser.add_argument("-o", "--show", action="store_true", help="Show password without copied to clipboard")
+args = funcs.make_script_args()
 
-args = parser.parse_args()
+def create_keyfile(args):
+	global xorKey, xorMark
 
-# Set keystring
-if args.keyfile:
-	try:
-		with open(args.keyfile, "r") as file:
-			keystring = file.read();
-	except:
-		print("!Keyfile not found");
+	if not args.keyfile:
+		print("!Set --keyfile option")
 		exit()
-elif args.keystring:
-	keystring = args.keystring
-else: 
-	print("!No key string")
-	exit()
 
-if not args.salt:
-	print("!Salt undefined")
-	exit()
+	if not args.keystring:
+		print("!Set --keystring option")
+		exit()
 
-login = ""
-if args.login:
-	login = args.login
+	with open(args.keyfile, "w") as file:
+		file.write(xorMark + str(funcs.xor_crypt(args.keystring, xorKey)))
 
-keystring = str(keystring).strip().lower()
-src_password = hashlib.scrypt(bytes(keystring.encode("utf-8")), salt=bytes((args.salt + login).encode("utf-8")), n=16384, r=8, p=1, dklen=15)
-src_password = src_password.hex()
+	print(f"\nKeystring saved to file {args.keyfile}")
 
-# add random spec symbol
-special_chars = "!@#$%^&*()"
-random.seed(keystring + args.salt + login)
-index = random.randint(0, len(src_password))
-src_password = src_password[:index] + random.choice(special_chars) + src_password[index:]
+def make_params_for_password(args):
+	global xorKey, xorMark
+	
+	if args.keyfile:
+		try:
+			with open(args.keyfile, "r") as file:
+				keystring = file.read();
+		except:
+			print("!Keyfile not found");
+			exit()
+		if xorMark in keystring:
+			keystring = funcs.xor_crypt(keystring.split(xorMark)[1], xorKey)
+	elif args.keystring:
+		keystring = args.keystring
+	else: 
+		print("!No key string")
+		exit()
 
-password = src_password.upper()
-if args.show:
-	print(f"\n{password}")
+	if not args.salt:
+		print("!Salt undefined")
+		exit()
+
+	login = ""
+	if args.login:
+		login = args.login
+
+	salt = args.salt
+
+	return keystring, salt, login
+
+if args.create:
+	create_keyfile(args)
 else:
-	pyperclip.copy(password)
-	print("\nPassword copied to clipboard")
+	keystring, salt, login = make_params_for_password(args)
+	password = gen_password(keystring, salt, login)
+
+	if args.show:
+		print(f"\n{password}")
+	else:
+		pyperclip.copy(password)
+		print("\nPassword copied to clipboard")
 
 
