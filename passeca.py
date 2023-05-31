@@ -58,7 +58,7 @@ if args.create:
 	create_keyfile(args)
 else:
 	keystring, salt, login = make_params_for_password(args)
-	password = gen_password(keystring, salt, login)
+	password = funcs.gen_password(keystring, salt, login)
 
 	if args.show:
 		print(f"\n{password}")
