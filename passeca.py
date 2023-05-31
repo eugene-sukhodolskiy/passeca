@@ -5,12 +5,13 @@ import hashlib
 import random
 import pyperclip
 
-parser = argparse.ArgumentParser(description='Simple password generator')
+parser = argparse.ArgumentParser(description="Simple password generator")
 
-parser.add_argument('--keystring', type=str, help='The passphrase on the basis of which the password will be generated')
-parser.add_argument('--keyfile', type=str, help='The path to the file on the basis of which the password will be generated. This is an alternative to the --keystring option')
-parser.add_argument('--salt', type=str, help='The required parameter is salt. For example, the site domain or program name')
-parser.add_argument('--login', type=str, help='User login, if needed')
+parser.add_argument("-k", "--keystring", type=str, help="The passphrase on the basis of which the password will be generated")
+parser.add_argument("-f", "--keyfile", type=str, help="The path to the file on the basis of which the password will be generated. This is an alternative to the --keystring option")
+parser.add_argument("-s", "--salt", type=str, help="The required parameter is salt. For example, the site domain or program name")
+parser.add_argument("-l", "--login", type=str, help="User login, if needed")
+parser.add_argument("-o", "--show", action="store_true", help="Show password without copied to clipboard")
 
 args = parser.parse_args()
 
@@ -47,7 +48,10 @@ index = random.randint(0, len(src_password))
 src_password = src_password[:index] + random.choice(special_chars) + src_password[index:]
 
 password = src_password.upper()
-pyperclip.copy(password)
+if args.show:
+	print(f"\n{password}")
+else:
+	pyperclip.copy(password)
+	print("\nPassword copied to clipboard")
 
-print("Password copied to clipboard")
 
